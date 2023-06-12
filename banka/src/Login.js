@@ -1,4 +1,4 @@
-import { Box, Button, Container, TextField } from "@mui/material";
+import { Alert, Box, Button, Container, Snackbar, TextField } from "@mui/material";
 import { UserContext } from "./App";
 import { useContext, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -8,6 +8,13 @@ const Login = () => {
   const { user, login, logout } = useContext(UserContext);
   const [loginData, setLoginData] = useState({ username: "", password: "" });
   const navigate = useNavigate();
+
+  // result -> da li je logovanje uspelo ili ne, ako je logovanje neuspesno prikazace se poruka
+  const [errorLogin, setErrorLogin] = useState(false);
+
+  const handleClose = () => {
+    setErrorLogin(false); //samo zatvorimo poruku
+  }
 
 const loginUser = async () => 
 {
@@ -22,10 +29,12 @@ const loginUser = async () =>
 
     if(response.ok){
          const user = await response.json();
-         login(user);
-         navigate('/');
+         login(user);         
+         setErrorLogin(false);
+         navigate('/transactions');
     }else {
-        console.log('Greska prilikom logovanja');
+        console.log('Problem prilikom logovanja');
+        setErrorLogin(true);
     }
 }
 
@@ -67,6 +76,11 @@ const loginUser = async () =>
         />
         <Button onClick={loginUser}>Login</Button>
       </Box>
+      <Snackbar open={errorLogin} onClose={handleClose}>
+          <Alert onClose={handleClose} severity='error' sx={{width: '60%'}}>
+            {"Pogresno korisnicko ime ili lozinka"}
+          </Alert>
+        </Snackbar>
     </Container>
   );
 };

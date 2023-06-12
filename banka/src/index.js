@@ -9,6 +9,8 @@ import NewTransaction from './transaction/NewTransaction';
 import Transaction from './transaction/Transaction';
 import Transactions from './transaction/Transactions';
 import EditTransaction from './transaction/EditTransaction';
+import { check_login, get_login } from './login_logic';
+import ErrorDisplay from './ErrorDisplay';
 
 
 
@@ -26,29 +28,42 @@ const router = createBrowserRouter([
         element: <Transactions></Transactions>,
         loader: //dobavimo sve transakcije
           async () => {
+            // transakcije moze da vidi ulogovan korisnika nema veze da li je admin ili obicni korisnik 
+            const user = check_login(['admin', 'user']);
             return fetch('http://localhost:3003/api/v1/transaction')
-          }
+          },
+          errorElement: <ErrorDisplay entity='transakcije'/>
       },
       {
         path: '/transaction/:id', 
         element: <Transaction/>,
         loader: //dobavimo jednu konkretnu transakciju na osnovu id-a
           async ({params}) => {
+            const user = check_login(['admin', 'user']);
             return fetch(`http://localhost:3003/api/v1/transaction/${params.id}`)
-          }
+          },
+          errorElement: <ErrorDisplay entity='transakcija'/>
 
       },
       {
         path: '/edit_transaction/:id',
         element: <EditTransaction/>,
-        loader: //dobavimo transakciju za izmenu
+        loader: //dobavimo transakciju za izmenu, izmenu moze da radi samo admin
           async ({params}) => {
+            const user = check_login(['admin']);
             return fetch(`http://localhost:3003/api/v1/transaction/${params.id}`)
-          }
+          },
+          errorElement: <ErrorDisplay entity='transakcija'/>
       },
       {
         path: '/add_transaction',
-        element: <NewTransaction></NewTransaction>
+        element: <NewTransaction></NewTransaction>,
+        loader: //kreiranje transakcije moze samo admin
+          () => {
+            const user = check_login(['admin']);
+            return null;
+          },
+        errorElement: <ErrorDisplay entity='transakcija'/>
       }
     ]
   },

@@ -56,7 +56,7 @@ const EditTransaction = () => {
     });
     if (result.ok) {
       const new_t = await result.json();
-      setResult((draftState) => {draftState.message = "Uspesno ste izmenili transakciju"});
+      setResult((draftState) => {draftState.message = new_t.message; draftState.error = false});
       setOpen(true);
     } else {
       setResult((draftState) => {draftState.message = "Doslo je do greske prilikom izmene transakcije.";
@@ -212,7 +212,7 @@ const EditTransaction = () => {
         <Button onClick={change}>Izmeni</Button>
         {/* snackbar cemo iskoristiti za prikaz poruke  */}
         <Snackbar open={open} onClose={handleClose}>
-          <Alert onClose={handleClose} severity={result.error ? 'error' : 'success'} sx={{width: '30%'}}>
+          <Alert onClose={handleClose} severity={result.error ? 'error' : 'success'} sx={{width: '60%'}}>
             {result.message}
           </Alert>
         </Snackbar>

@@ -56,12 +56,17 @@ function App() {
   const [user, login, logout] = useLogin();
   const navigate = useNavigate();
 
+  const odjaviSe = () => {
+    logout();
+    navigate('/');
+  }
+
   useEffect(() => {
     console.log(JSON.stringify(user));
     if (!user) {
       navigate("login");
     }
-  }, []);
+  }, [user]);
   return (
     <ThemeProvider theme={theme}>
       {/* sve komponente koje se nadju u okviru providera mocice da pristupie user-u, login-u i logout-u */}
@@ -91,7 +96,7 @@ function App() {
                   {" "}
                   Zdravo {user.username}!{" "}
                 </Typography>
-                <Button sx={{ color: "white" }}>Odjavi se</Button>
+                <Button sx={{ color: "white" }} onClick={odjaviSe}>Odjavi se</Button>
               </Stack>
             ) : (
               <Button component={NavLink} to="login">
@@ -113,14 +118,16 @@ function App() {
             </Box>
             <Divider />
             <Stack direction="column">
-              <Button component={NavLink} to="transactions">
+              {/* svi korisnici mogu da vide transakcije */}
+             {user ? <Button component={NavLink} to="transactions">
                 {" "}
                 Transakcije{" "}
-              </Button>
-              <Button component={NavLink} to="add_transaction">
+              </Button> :<> </>} 
+              {/* korisnik samo ako je admin moze da doda novu transakciju */}
+              {user && user.role === 'admin' ? <Button component={NavLink} to="add_transaction">
                 {" "}
                 Nova transakcije{" "}
-              </Button>
+              </Button> : <></>}
             </Stack>
           </Drawer>
         </Stack>

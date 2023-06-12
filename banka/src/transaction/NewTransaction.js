@@ -1,6 +1,7 @@
 // komponenta za unos nove transakcije
 
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -10,6 +11,7 @@ import {
   InputAdornment,
   Radio,
   RadioGroup,
+  Snackbar,
   TextField,
 } from "@mui/material";
 import { validateAmount, validateTextField } from "../validacije/validacije";
@@ -32,6 +34,22 @@ const NewTransaction = () => {
     amount: ""
   });
 
+  // ovo cemo koristiti kako bi prikazali poruku koju dobijemo sa back-enda prilikom dodavanja nove transakcije
+  const [result, setResult] = useImmer({message: '', error: false});
+
+  // ovo cemo koristiti za prikaz poruke
+  const [open, setOpen] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if(reason === 'clickaway'){
+      return;
+    }
+    setOpen(false);
+    if(!result.error)
+      navigate(`/transactions`);
+
+  }
+
   const save = async () => {
     // alert(JSON.stringify(transaction));
     // obracamo se back-u da unese novu transakciju
@@ -44,11 +62,18 @@ const NewTransaction = () => {
    })
    if(result.ok){
     const new_t = await result.json();
-    alert('Uspesno ste dodali transakciju');
-    navigate('/transactions');
+    setResult((draftState) => {
+      draftState.message = 'Uspesno ste dodali transakciju';
+      draftState.error = false;
+    })
+    setOpen(true);
    }else {
-    alert('Doslo je do greske prilikom dodavanje transakcije.')
-   }
+    setResult((draftState) => {
+      draftState.message = 'Doslo je do greske prilikom dodavanja nove transakcije.';
+      draftState.error = true;
+    })
+    setOpen(true);
+     }
   };
   return (
     <Container>
@@ -193,6 +218,12 @@ const NewTransaction = () => {
           Sacuvaj
         </Button>
       </Box>
+      {/* snackbar cemo iskoristiti za prikaz poruke  */}
+      <Snackbar open={open} onClose={handleClose}>
+          <Alert onClose={handleClose} severity={result.error ? 'error' : 'success'} sx={{width: '60%'}}>
+            {result.message}
+          </Alert>
+        </Snackbar>
     </Container>
   );
 };
