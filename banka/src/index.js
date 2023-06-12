@@ -5,12 +5,10 @@ import App, { UserContext } from './App';
 import reportWebVitals from './reportWebVitals';
 import {RouterProvider, createBrowserRouter} from 'react-router-dom'
 import Login from './Login';
-import { useLogin } from './login_logic';
-import Transactions from './Transactions';
-import NewTransaction from './NewTransaction';
-import Transaction from './Transaction';
-import EditTransaction from './EditTransaction';
-
+import NewTransaction from './transaction/NewTransaction';
+import Transaction from './transaction/Transaction';
+import Transactions from './transaction/Transactions';
+import EditTransaction from './transaction/EditTransaction';
 
 
 
